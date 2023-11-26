@@ -10,6 +10,7 @@
 #define HIGHT 15
 #define AREA_HIGHT 5
 #define AREA_AMOUNT 24
+#define FILE_NAME "board.txt"
 
 using namespace std;
 
@@ -282,6 +283,32 @@ int main()
     markPicesOnAreas(areas);
     printPices(areas, areasX, areasY);
 
+    //zapisywanie pliku
+    FILE* file;
+    //file = fopen(FILE_NAME, "w");
+
+    errno_t err = fopen_s(&file, FILE_NAME, "w");
+
+
+
+    
+     //Check if the file was opened successfully
+
+    if (err != 0 || file == NULL) {
+
+        printf("Error opening the file.\n");
+
+        return 1; // Exit the program with an error code
+
+    }
+
+    fwrite(areas, sizeof(areas[0][0]), sizeof(areas) / sizeof(areas[0][0]), file);
+    fclose(file);
+    
+
+
+
+
     //Menu
     char option;
     cin >> option;
@@ -289,6 +316,16 @@ int main()
     {
         char name1[50];
         char name2[50];
+        cout << "Enter name of first player(max 50 signs no spaces): ";
+        for (int i = 0; i < 50; i++)
+        {
+            cin >> name1[i];
+        }
+        cout << "Enter name of second player(max 50 signs no spaces): ";
+        for (int i = 0; i < 50; i++)
+        {
+            cin >> name2[i];
+        }
         char player1[50];
         char player2[50];
         int n1 = throwDice();
@@ -314,7 +351,6 @@ int main()
                     player1[i] = name2[i];
                     player2[i] = name1[i];
                 }
-
             }
 
         }
