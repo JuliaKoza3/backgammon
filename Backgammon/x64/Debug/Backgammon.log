@@ -1,0 +1,6 @@
+﻿  Backgammon.cpp
+C:\Users\user\Desktop\basics of programing\1 project\Backgammon\Backgammon\Backgammon.cpp(221,17): warning C4551: function call missing argument list
+C:\Users\user\Desktop\basics of programing\1 project\Backgammon\Backgammon\Backgammon.cpp(224,17): warning C4551: function call missing argument list
+C:\Users\user\Desktop\basics of programing\1 project\Backgammon\Backgammon\Backgammon.cpp(230,17): warning C4551: function call missing argument list
+C:\Users\user\Desktop\basics of programing\1 project\Backgammon\Backgammon\Backgammon.cpp(233,17): warning C4551: function call missing argument list
+C:\Users\user\Desktop\basics of programing\1 project\Backgammon\Backgammon\Backgammon.cpp(288,12): error C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
