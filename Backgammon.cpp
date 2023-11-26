@@ -282,17 +282,53 @@ int main()
     markPicesOnAreas(areas);
     printPices(areas, areasX, areasY);
 
+    //Menu
+    char option;
+    cin >> option;
+    if (option == 'N')
+    {
+        char name1[50];
+        char name2[50];
+        char player1[50];
+        char player2[50];
+        int n1 = throwDice();
+        int n2 = throwDice();
+        cout << name1 << "'s dice: " << n1;
+        cout << name2 << "'s dice : " << n2;
+        if (n1 != n2)
+        {
+            if (n1 > n2)
+            {
+                cout << name1 << " starts";
+                for (int i = 0; i < 50; i++)
+                {
+                    player1[i] = name1[i];
+                    player2[i] = name2[i];
+                }
+            }
+            else if (n2 > n1)
+            {
+                cout << name2 << " starts";
+                for (int i = 0; i < 50; i++)
+                {
+                    player1[i] = name2[i];
+                    player2[i] = name1[i];
+                }
 
-    //oznaczenie czy pioenk jest czy nie (jesli jasny to [, jesli ciemny to #,  jesli nie ma to 0)
-   
-    //printPices(areas, areasX, areasY);
+            }
+
+        }
+        else
+        {
+            while (n1 == n2)
+            {
+                n1 = throwDice();
+                n2 = throwDice();
+            }
+        }
+    }
 
 
-  
-
-
-    //ustawianie pionków na planszy
-   
 
 
 
