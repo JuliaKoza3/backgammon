@@ -10,7 +10,12 @@
 #define HIGHT 15
 #define AREA_HIGHT 5
 #define AREA_AMOUNT 24
+#define PAWNS_AMOUNT 15
+#define MAX_LETTERS 20
 #define FILE_NAME "board.txt"
+#define PRINT_START_MENUX 50
+#define PRINT_START_MENUY 10
+
 
 using namespace std;
 
@@ -50,11 +55,11 @@ void corrdiantesForAreasX(int areasX[AREA_AMOUNT])
 }
 
 
-void corrdinatesForAreasY(int areasY[AREA_HIGHT][AREA_AMOUNT])
+void corrdinatesForAreasY(int areasY[AREA_HIGHT+1][AREA_AMOUNT])
 {
     
     int a = 19;
-    for (int i = 0; i < AREA_HIGHT; i++)
+    for (int i = 0; i < (AREA_HIGHT+1); i++)
     {
         for (int j = 0; j < (AREA_AMOUNT / 2); j++)
         {
@@ -64,7 +69,7 @@ void corrdinatesForAreasY(int areasY[AREA_HIGHT][AREA_AMOUNT])
 
     }
     a = 5;
-    for (int i = 0; i < AREA_HIGHT; i++)
+    for (int i = 0; i < (AREA_HIGHT+1); i++)
     {
         for (int j = (AREA_AMOUNT / 2); j < AREA_AMOUNT; j++)
         {
@@ -76,8 +81,13 @@ void corrdinatesForAreasY(int areasY[AREA_HIGHT][AREA_AMOUNT])
 }
 
 
-void markPicesOnAreas(char areas[AREA_HIGHT][AREA_AMOUNT])
+void markPawnsOnAreas(char areas[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
 {
+    for (int j = 0; j < AREA_AMOUNT; j++)
+    {
+        amountOfPawns[j] = 0;
+    }
+    
     for (int i = 0; i < AREA_HIGHT; i++)
     {
         for (int j = 0; j < AREA_AMOUNT; j++)
@@ -112,12 +122,47 @@ void printAreas(void)
 {
     for (int i = 0; i < AREA_HIGHT; i++)
     {
-        cout << ":";
+        putch(':');
+        for (int j = 0; j < 3; j++)
+        {
+            putch(' ');
+            putch(':');
+            putch(':');
+            putch(' ');
+            putch('\\');
+            putch('/');
+
+        }
+        putch('|');
+        for (int j = 0; j < 4; j++)
+        {
+            putch(' ');
+        }
+        putch('|');
+        for (int j = 0; j < 3; j++)
+        {
+            putch(' ');
+            putch(':');
+            putch(':');
+            putch('\\');
+            putch('/');
+
+        }
+        putch('|');
+        for (int j = 0; j < 4; j++)
+        {
+            putch(' ');
+        }
+        putch('|');
+        putch(':');
+        putch('\n');
+
+        /*cout << ":";
         cout << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " ";
         cout << "|    |";
         cout << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " ";
         cout << "|    |";
-        cout << ":" << endl;
+        cout << ":" << endl;*/
     }
 }
 
@@ -191,15 +236,19 @@ void printLowerNumbers()
 }
 
 
-void printDices()
-{
-    srand((unsigned)time(0));
-    cout << "DICE 1: " << throwDice() << "   ";
-    cout << "DICE 2: " << throwDice()<<"\n\n";
+void printDices(int n1, int n2)
+{   
+    cout << "DICE 1: " << n1 << "   ";
+    cout << "DICE 2: " << n2 << "   ";
+
 }
+
+
 
 void printOptions()
 {
+    cout << "'M'- move";
+    cout << "    ";
     cout << "'D'- throw dices";
     cout << "    ";
     cout << "'S' - save game";
@@ -209,29 +258,52 @@ void printOptions()
     cout << "'R' - show ranking";
 }
 
-void printPices(char areas[AREA_HIGHT][AREA_AMOUNT], int areasX[AREA_HIGHT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void printPawns(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_HIGHT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
 {
-    for (int i = 0; i < AREA_HIGHT; i++)
+    int amount = 0;
+    for (int i = 0; i < 15; i++)
     {
+        int k = i;
         for (int j = 0; j < AREA_AMOUNT; j++)
         {
+            if (i > 4)
+            {
+                k = 4;                              
+            }
             if (areas[i][j] == '[')
             {
-                gotoxy(areasX[j], areasY[i][j]);
+                if (i>4)
+                {
+                    textcolor(BLUE);
+                    gotoxy(areasX[j], areasY[k+1][j]);
+                    cout << amountOfPawns[j]+1;
+                }
+                gotoxy(areasX[j], areasY[k][j]);
                 insline;
                 putch('[');
-                gotoxy(areasX[j] + 1, areasY[i][j]);
+                gotoxy(areasX[j] + 1, areasY[k][j]);
                 insline;
                 putch(']');
+                amountOfPawns[j] += 1;
+                textcolor(MAGENTA);
             }
             else  if (areas[i][j] == '#')
             {
-                gotoxy(areasX[j], areasY[i][j]);
+                
+                if (i > 4)
+                {
+                    textcolor(BLUE);
+                    gotoxy(areasX[j], areasY[k + 1][j]);
+                    cout << amountOfPawns[j] + 1;
+                }
+                gotoxy(areasX[j], areasY[k][j]);
                 insline;
                 putch('#');
-                gotoxy(areasX[j] + 1, areasY[i][j]);
+                gotoxy(areasX[j] + 1, areasY[k][j]);
                 insline;
                 putch('#');
+                amountOfPawns[j] += 1;
+                textcolor(MAGENTA);
             }
             else
             {
@@ -244,10 +316,41 @@ void printPices(char areas[AREA_HIGHT][AREA_AMOUNT], int areasX[AREA_HIGHT], int
 
 }
 
+void newGame(char player1name[MAX_LETTERS], char player2name[MAX_LETTERS])
+{
+    int n1 = throwDice();
+    int n2 = throwDice();
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY+5);
+    cout << "first one: " << n1 << endl;
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 6);
+    cout << "second one: " << n2 << endl;
+
+    if ( n1> n2)
+    {
+        gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 8);
+        cout <<"first one starts"; 
+        gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 9);
+        cout<< "press enter to start the game";
+    }
+    else if (n2 > n1)
+    {
+        gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 8);
+        cout <<"second one starts"; 
+        gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 9);
+        cout << "press enter to start the game";
+    }
+    else
+    {
+        newGame(player1name, player2name);
+    }
+
+}
+
+
 
 void printBoard(void)
 {
-    textmode(C4350);
+    //textmode(C4350);
     textcolor(MAGENTA);
     cout << "Julia Koza, 198151\n";
     gotoxy(36, 2);
@@ -264,8 +367,46 @@ void printBoard(void)
     gotoxy(36, 22);
     cout << "player2name";
     putch('\n');
-    printDices();
+   // printDices();
     printOptions();
+
+}
+
+void startMenu(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_HIGHT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT], char player1name[MAX_LETTERS], char player2name[MAX_LETTERS])
+{   gotoxy(PRINT_START_MENUX, PRINT_START_MENUY);
+    cout << "N - new game" << endl;
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 1);
+    cout << "S - play from saved game" << endl;
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 3);
+    if (getche() == 'N')
+    {
+        /*cout << "Enter name of first player: ";
+        for (int i = 0; i < MAX_LETTERS; i++)
+        {
+            player1name[i] = getche();
+
+        }
+        cout << "Enter name of second player: ";
+        for (int i = 0; i < MAX_LETTERS; i++)
+        {
+            player2name[i] = getche();
+
+        }*/
+        newGame(player1name, player2name);
+        getch();
+        if (kbhit)
+        {
+            clrscr();
+            gotoxy(1, 1);
+            printBoard();
+            printPawns(areas, areasX, areasY, amountOfPawns);
+        }
+
+    }
+    if (getche() == 'S')
+    {
+        //otwieranie zapisanej gry
+    }
 
 }
 
@@ -274,14 +415,79 @@ void printBoard(void)
 
 int main()
 {
+    srand((unsigned)time(0));
+
+
     int areasX[AREA_AMOUNT];
-    int areasY[AREA_HIGHT][AREA_AMOUNT];
-    char areas[AREA_HIGHT][AREA_AMOUNT];
-    printBoard();
+    int areasY[AREA_HIGHT+1][AREA_AMOUNT];
+    char areas[PAWNS_AMOUNT][AREA_AMOUNT];
+    int amountOfPawns[AREA_AMOUNT];
+    char player1name[MAX_LETTERS];
+    char player2name[MAX_LETTERS];
+
+
     corrdiantesForAreasX(areasX);
     corrdinatesForAreasY(areasY);
-    markPicesOnAreas(areas);
-    printPices(areas, areasX, areasY);
+    markPawnsOnAreas(areas, amountOfPawns);
+    startMenu(areas, areasX, areasY, amountOfPawns, player1name, player2name);
+
+    
+
+    
+
+
+    //Menu
+    int startArea;
+    int finishArea;
+    if (getch() == 'M')
+    {
+        if (kbhit)
+        {
+            int n1 = throwDice();
+            int n2 = throwDice();
+            printDices(n1, n2);
+            putch('\n');
+
+            cout << "Enter number of area from where you want to move your pawn: \n";
+            startArea=getche();
+            putch('\n');
+            //opcja dla bia³ych pionków
+            if (*areas[(startArea + 1)] == '[')
+            {
+                //highlight();
+            }
+            else if (*areas[(startArea + 1)] == '0')
+            {
+                //highlight();
+                
+            }
+
+            //opcja dla czarnych pionków
+
+            if (*areas[(startArea + 1)] == '#')
+            {
+                //highlight();
+            }
+            else if (*areas[(startArea + 1)] == '0')
+            {
+                //highlight();
+
+            }
+
+            //sprawdzanie ruchów i podswietlanie pól
+
+
+            cout << "Enter number of area you where you want to move your pawn: \n";
+            finishArea = getche();
+
+        }
+               
+
+    }
+
+   
+
+    
 
     //zapisywanie pliku
     FILE* file;
@@ -304,65 +510,15 @@ int main()
 
     fwrite(areas, sizeof(areas[0][0]), sizeof(areas) / sizeof(areas[0][0]), file);
     fclose(file);
+
+
+    
     
 
 
 
 
-    //Menu
-    char option;
-    cin >> option;
-    if (option == 'N')
-    {
-        char name1[50];
-        char name2[50];
-        cout << "Enter name of first player(max 50 signs no spaces): ";
-        for (int i = 0; i < 50; i++)
-        {
-            cin >> name1[i];
-        }
-        cout << "Enter name of second player(max 50 signs no spaces): ";
-        for (int i = 0; i < 50; i++)
-        {
-            cin >> name2[i];
-        }
-        char player1[50];
-        char player2[50];
-        int n1 = throwDice();
-        int n2 = throwDice();
-        cout << name1 << "'s dice: " << n1;
-        cout << name2 << "'s dice : " << n2;
-        if (n1 != n2)
-        {
-            if (n1 > n2)
-            {
-                cout << name1 << " starts";
-                for (int i = 0; i < 50; i++)
-                {
-                    player1[i] = name1[i];
-                    player2[i] = name2[i];
-                }
-            }
-            else if (n2 > n1)
-            {
-                cout << name2 << " starts";
-                for (int i = 0; i < 50; i++)
-                {
-                    player1[i] = name2[i];
-                    player2[i] = name1[i];
-                }
-            }
-
-        }
-        else
-        {
-            while (n1 == n2)
-            {
-                n1 = throwDice();
-                n2 = throwDice();
-            }
-        }
-    }
+    
 
 
 
