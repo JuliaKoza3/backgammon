@@ -28,6 +28,14 @@
 #define MENU_X 1
 #define MENU_Y 25
 
+#define BARX 23
+#define PAWNS_IN_BAR 30
+
+#define AREA1_LEFT_CORRNER_X 43
+#define AREA7_LEFT_CORRNER_X 18
+#define AREA13_LEFT_CORRNER_X 3
+#define AREA19_LEFT_CORRNER_X 28
+
 
 
 
@@ -39,6 +47,55 @@ typedef struct board {
     int Y[AREA_HIGHT + 1][AREA_AMOUNT];
     char inside[PAWNS_AMOUNT][AREA_AMOUNT];
 };
+
+typedef struct BAR
+{
+    int X = 23;
+    int Y[PAWNS_IN_BAR];
+    char inside[PAWNS_IN_BAR];
+};
+
+void corrdinatesForBarY(struct BAR* bar)
+{
+    int k = 19;
+    for (int i = 0; i < PAWNS_IN_BAR; i++)
+    {
+        bar->Y[i] = k;
+        k--;
+    }
+}
+
+void markPawnsOnBar(struct BAR* bar)
+{
+    for (int i = 0; i < PAWNS_IN_BAR; i++)
+    {
+        bar->inside[i] = '0';
+    }
+}
+
+void moveWhitePawnsToBar(struct BAR* bar)
+{
+    for (int i = 0; i < PAWNS_IN_BAR / 2; i++)
+    {
+        if (bar->inside[i] == '0')
+        {
+            bar->inside[i] = '[';
+        }
+    }
+}
+
+void moveDarkPawnsToBar(struct BAR* bar)
+{
+    for (int i = PAWNS_IN_BAR/2; i < PAWNS_IN_BAR; i++)
+    {
+        if (bar->inside[i] == '0')
+        {
+            bar->inside[i] = '#';
+        }
+    }
+}
+
+
 
 int inputInt()                                           //input function//////////////////////
 {
@@ -99,25 +156,25 @@ void pawnsQuestion()
 void corrdiantesForAreasX(struct board *areas)                          //zapis inforamcji o polac i poczatkowe ustwaienie pionków
 {
     
-    int k = 43;
+    int k = AREA1_LEFT_CORRNER_X;
     for (int i = 0; i < (AREA_AMOUNT / 4); i++)
     {
         areas->X[i] = k;
         k -= 3;
     }
-    k = 18;
+    k = AREA7_LEFT_CORRNER_X;
     for (int i = (AREA_AMOUNT / 4); i < 2 * (AREA_AMOUNT / 4); i++)
     {
         areas->X[i] = k;
         k -= 3;
     }
-    k = 3;
+    k = AREA13_LEFT_CORRNER_X;
     for (int i = 2 * (AREA_AMOUNT / 4); i < 3 * (AREA_AMOUNT / 4); i++)
     {
         areas->X[i] = k;
         k += 3;
     }
-    k = 28;
+    k = AREA19_LEFT_CORRNER_X;
     for (int i = 3 * (AREA_AMOUNT / 4); i < AREA_AMOUNT; i++)
     {
         areas->X[i] = k;
@@ -1824,7 +1881,8 @@ int main()
 {
     srand((unsigned)time(0));
 
-    struct board areas;   
+    struct board areas;  
+    struct BAR bar;
 
     char player1name[MAX_LETTERS];
     char player2name[MAX_LETTERS];
