@@ -2,7 +2,6 @@
 //
 
 #define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
 #include "conio2.h"
 #include <cstdlib>
 #include <stdio.h>
@@ -10,27 +9,58 @@
 
 #define WIDHT 50
 #define HIGHT 15
+
 #define AREA_HIGHT 5
 #define AREA_AMOUNT 24
+
 #define PAWNS_AMOUNT 15
-#define MAX_LETTERS 20
+
+#define MAX_LETTERS 5
+
 #define FILE_NAME "board.txt"
+
 #define PRINT_START_MENUX 50
 #define PRINT_START_MENUY 10
+
+#define COMMENTS_X 60
+#define COMMENTS_Y 10
+
+#define MENU_X 1
+#define MENU_Y 25
+
+
 
 
 using namespace std;
 
-int input()
+typedef struct board {
+
+    int X[AREA_AMOUNT];
+    int Y[AREA_HIGHT + 1][AREA_AMOUNT];
+    char inside[PAWNS_AMOUNT][AREA_AMOUNT];
+};
+
+int inputInt()                                           //input function//////////////////////
 {
     int x;
-   // cout << "kot";
     if (scanf("%d", &x) > 0) {
-        cout << x << endl;
+        printf("%d  ", x);
     }
-    else cout << "You did not enter any number.\n";
+    else printf("You did not enter any number.\n");
     return x;
-}
+}    
+
+char inputChar()
+{
+    char x;
+    if (scanf("%c", &x) > 0) {
+        printf("%c", x);
+    }
+    else printf("You did not enter any number.\n");
+    return x;
+}                                                   //////////////////////////////////////////////////
+
+
 
 int throwDice()
 {
@@ -38,37 +68,65 @@ int throwDice()
 }
 
 
-void corrdiantesForAreasX(int areasX[AREA_AMOUNT])
+
+void looseTrun()                                                //comment functions////////////////////////////
+{                                                               
+    gotoxy(COMMENTS_X, COMMENTS_Y);                             
+    printf("move not possible u lose ur turn");
+}                                                                  
+
+void startComent()
+{
+    gotoxy(1, 27);
+    printf("Enter where u want to start");
+}
+
+void finishComent()
+{
+    gotoxy(65, 27);
+    printf("Enter where u want to finish");
+}
+
+void pawnsQuestion()
+{
+    gotoxy(30, 27);
+    printf("How many pawns u want to move?  ");
+}                                                     ////////////////////////////////////////////////
+
+
+
+
+void corrdiantesForAreasX(struct board *areas)                          //zapis inforamcji o polac i poczatkowe ustwaienie pionków
 {
     
     int k = 43;
     for (int i = 0; i < (AREA_AMOUNT / 4); i++)
     {
-        areasX[i] = k;
+        areas->X[i] = k;
         k -= 3;
     }
     k = 18;
     for (int i = (AREA_AMOUNT / 4); i < 2 * (AREA_AMOUNT / 4); i++)
     {
-        areasX[i] = k;
+        areas->X[i] = k;
         k -= 3;
     }
     k = 3;
     for (int i = 2 * (AREA_AMOUNT / 4); i < 3 * (AREA_AMOUNT / 4); i++)
     {
-        areasX[i] = k;
+        areas->X[i] = k;
         k += 3;
     }
     k = 28;
     for (int i = 3 * (AREA_AMOUNT / 4); i < AREA_AMOUNT; i++)
     {
-        areasX[i] = k;
+        areas->X[i] = k;
         k += 3;
     }
 }
 
 
-void corrdinatesForAreasY(int areasY[AREA_HIGHT+1][AREA_AMOUNT])
+void corrdinatesForAreasY(struct board *areas)
 {
     
     int a = 19;
@@ -76,7 +134,7 @@ void corrdinatesForAreasY(int areasY[AREA_HIGHT+1][AREA_AMOUNT])
     {
         for (int j = 0; j < (AREA_AMOUNT / 2); j++)
         {
-            areasY[i][j] = a;
+            areas->Y[i][j] = a;
         }
         a--;
 
@@ -86,7 +144,7 @@ void corrdinatesForAreasY(int areasY[AREA_HIGHT+1][AREA_AMOUNT])
     {
         for (int j = (AREA_AMOUNT / 2); j < AREA_AMOUNT; j++)
         {
-            areasY[i][j] = a;
+            areas->Y[i][j] = a;
         }
         a++;
 
@@ -94,12 +152,8 @@ void corrdinatesForAreasY(int areasY[AREA_HIGHT+1][AREA_AMOUNT])
 }
 
 
-void markPawnsOnAreas(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
+void markPawnsOnAreas(struct board *areas)
 {
-    for (int j = 0; j < AREA_AMOUNT; j++)
-    {
-        amountOfPawns[j] = 0;
-    }
     
     for (int i = 0; i < PAWNS_AMOUNT; i++)
     {
@@ -107,38 +161,39 @@ void markPawnsOnAreas(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int amountOfPawns[A
         {
             if (j % 2)
             {
-                areas[i][j] = ':';
+                areas->inside[i][j] = ':';
             }
             else
             {
-                areas[i][j] = '!';
+                areas->inside[i][j] = '!';
             }
         }
     }
 
     for (int i = 0; i < 2; i++)
     {
-        areas[i][0] = '[';
-        areas[i][23] = '#';
+        areas->inside[i][0] = '[';
+        areas->inside[i][23] = '#';
     }
     for (int i = 0; i < 5; i++)
     {
-        areas[i][5] = '#';
-        areas[i][11] = '[';
-        areas[i][12] = '#';
-        areas[i][18] = '[';
+        areas->inside[i][5] = '#';
+        areas->inside[i][11] = '[';
+        areas->inside[i][12] = '#';
+        areas->inside[i][18] = '[';
     }
     for (int i = 0; i < 3; i++)
     {
-        areas[i][7] = '#';
-        areas[i][16] = '[';
+        areas->inside[i][7] = '#';
+        areas->inside[i][16] = '[';
     }
-
-
 }
+                                             //////////////////////////////////////////////////////////////
 
 
-void printAreas(void)
+
+
+void printAreas(void)                          //wyswietalnie wszystkich elementów planszy na podstawie wspo³rzednych ekarnu
 {
     for (int i = 0; i < AREA_HIGHT; i++)
     {
@@ -180,15 +235,8 @@ void printAreas(void)
         putch(':');
         putch('\n');
 
-        /*cout << ":";
-        cout << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " ";
-        cout << "|    |";
-        cout << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " " << "::" << " " << "!!" << " ";
-        cout << "|    |";
-        cout << ":" << endl;*/
     }
 }
-
 
 void printBreak(void)
 {
@@ -218,15 +266,9 @@ void printBreak(void)
         putch(':');
         putch('\n');
 
-        /*cout << ":";
-        cout << " " << "  " << " " << "  " << " " << "  " << " " << "  " << " " << "  " << " " << "  " << " ";
-        cout << "|    |";
-        cout << " " << "  " << " " << "  " << " " << "  " << " " << "  " << " " << "  " << " " << "  " << " ";
-        cout << "|    |";
-        cout << ":" << endl;*/
+        
     }
 }
-
 
 void printFrame(void)
 {
@@ -239,7 +281,6 @@ void printFrame(void)
     putch('\n');
 
 }
-
 
 void printUpperNumbers()
 {
@@ -258,10 +299,9 @@ void printUpperNumbers()
         putch(' ');
         printf("%i", i);
     }
-    cout << endl;
+    putch('\n');
 
 }
-
 
 void printLowerNumbers()
 {
@@ -270,14 +310,12 @@ void printLowerNumbers()
     {
         putch(' ');
         printf("%i", i);
-        //cout << " " << i;
     }
     for (int i = 9; i > 6; i--)
     {
         putch(' ');
         putch(' ');
         printf("%i", i);
-        //cout << "  " << i;
     }
     for (int i = 0; i < 7; i++)
     {
@@ -288,178 +326,25 @@ void printLowerNumbers()
         putch(' ');
         putch(' ');
         printf("%i", i);
-        //cout << "  " << i;
     }
-}
-
-
-void printDices(int n1, int n2)
-{   
-    cout << "DICE 1: " << n1 << "   ";
-    cout << "DICE 2: " << n2 << "   ";
-}
-
-
-
+}      
 void printOptions()
 {
-    cout << "'M'- move";
-    cout << "    ";
-    cout << "'S' - save game";
-    cout << "    ";
-    cout << "'R' - show ranking";
-}
-
-void printWhitePawns(int i, int j, int k, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
+    printf("'M'- move");
+    printf("    ");
+    printf("'S' - save game");
+}       
+void printBoard(char name1[MAX_LETTERS], char name2[MAX_LETTERS])
 {
-    if (i > 4)
-    {
-        textcolor(BLUE);
-        //gotoxy(areasX[j], areasY[k+1][j]);
-        //cout << amountOfPawns[j]+1;
-    }
-    gotoxy(areasX[j], areasY[k][j]);
-    insline;
-    putch('[');
-    gotoxy(areasX[j] + 1, areasY[k][j]);
-    insline;
-    putch(']');
-    amountOfPawns[j] += 1;
+
     textcolor(MAGENTA);
-
-}
-
-void printDarkPawns(int i, int j, int k, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
-{
-    if (i > 4)
-    {
-        textcolor(BLUE);
-        // gotoxy(areasX[j], areasY[k + 1][j]);
-         //cout << amountOfPawns[j] + 1;
-    }
-    gotoxy(areasX[j], areasY[k][j]);
-    insline;
-    putch('#');
-    gotoxy(areasX[j] + 1, areasY[k][j]);
-    insline;
-    putch('#');
-    amountOfPawns[j] += 1;
-    textcolor(MAGENTA);
-}
-
-void printWhiteAreas(int i, int j, int k, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
-{
-    gotoxy(areasX[j], areasY[i][j]);
-    insline;
-    putch('!');
-    gotoxy(areasX[j] + 1, areasY[i][j]);
-    insline;
-    putch('!');
-}
-
-void printDarkAreas(int i, int j, int k, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
-{
-    gotoxy(areasX[j], areasY[i][j]);
-    insline;
-    putch(':');
-    gotoxy(areasX[j] + 1, areasY[i][j]);
-    insline;
-    putch(':');
-}
-
-void printPawns(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_HIGHT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT])
-{
-    int amount = 0;
-    for (int i = 0; i < 15; i++)
-    {
-        int k = i;
-        for (int j = 0; j < AREA_AMOUNT; j++)
-        {
-            if (i > 4)
-            {
-                k = 4;                              
-            }
-            if (areas[i][j] == '[')
-            {
-                printWhitePawns(i, j, k, areasX, areasY, amountOfPawns);                
-            }
-            else  if (areas[i][j] == '#')
-            {
-                printDarkPawns(i, j, k, areasX, areasY, amountOfPawns);              
-                
-            }
-            if (i <= 4)
-            {
-                if (areas[i][j] == '!')
-                {
-                    printWhiteAreas(i, j, k, areasX, areasY, amountOfPawns);
-
-                    //*amountOfPawns[j] += 1;
-                    //textcolor(MAGENTA);
-                }
-                else if (areas[i][j] == ':')
-                {
-                    printDarkAreas(i, j, k, areasX, areasY, amountOfPawns);
-                   
-                    //*amountOfPawns[j] += 1;
-                   // textcolor(MAGENTA);
-                }
-            }
-        }
-    }
-    gotoxy(1, 25);
-
-}
-
-void player1starts()
-{
-    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 8);
-    cout << "first one starts";
-    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 9);
-    cout << "press enter to start the game";
-}
-
-void player2starts()
-{
-    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 8);
-    cout << "second one starts";
-    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 9);
-    cout << "press enter to start the game";
-}
-
-void newGame(char player1name[MAX_LETTERS], char player2name[MAX_LETTERS])
-{
-    int n1 = throwDice();
-    int n2 = throwDice();
-    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY+5);
-    cout << "first one: " << n1 << endl;
-    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 6);
-    cout << "second one: " << n2 << endl;
-
-    if ( n1> n2)
-    {
-        player1starts();
-    }
-    else if (n2 > n1)
-    {
-        player2starts();
-    }
-    else
-    {
-        newGame(player1name, player2name);
-    }
-
-}
-
-
-
-void printBoard(void)
-{
-    //textmode(C4350);
-    textcolor(MAGENTA);
-    cout << "Julia Koza, 198151\n";
+    printf("Julia Koza, 198151\n");
     gotoxy(36, 2);
-    cout << "player1name";
+    for (int i = 0; i < MAX_LETTERS; i++)
+    {
+        printf("%c", name1[i]);
+    }
+    printf("    PAWNS: []");
     gotoxy(0, 3);
     putch('\n');
     printUpperNumbers();
@@ -469,180 +354,358 @@ void printBoard(void)
     printAreas();
     printFrame();
     printLowerNumbers();
-    //printPawns();
     gotoxy(36, 22);
-    cout << "player2name";
+    for (int i = 0; i < MAX_LETTERS; i++)
+    {
+        printf("%c", name2[i]);
+    }
+    printf("   PAWNS: ##");
     putch('\n');
-   // printDices();
     printOptions();
+
+}                                                                 ////////////////////////////////////////////////
+
+
+
+void printDices(int n1, int n2)
+{   
+    printf("DICE 1: %d    ", n1);
+    printf("DICE 2: %d    ", n2);
+    
+}
+
+
+void printWhitePawns(int i, int j, int k, struct board *areas)                 //drukowanie pionków na polach i pól
+{
+    if (i > 4)
+    {
+        textcolor(BLUE);
+    }
+    gotoxy(areas->X[j], areas->Y[k][j]);
+    insline;
+    putch('[');
+    gotoxy(areas->X[j] + 1, areas->Y[k][j]);
+    insline;
+    putch(']');
+    textcolor(MAGENTA);
+
+}            
+
+void printDarkPawns(int i, int j, int k, struct board *areas)
+{
+    if (i > 4)
+    {
+        textcolor(BLUE);
+    }
+    gotoxy(areas->X[j], areas->Y[k][j]);
+    insline;
+    putch('#');
+    gotoxy(areas->X[j] + 1, areas->Y[k][j]);
+    insline;
+    putch('#');
+    textcolor(MAGENTA);
+}
+
+void printWhiteAreas(int i, int j, int k, struct board *areas)
+{
+    gotoxy(areas->X[j], areas->Y[i][j]);
+    insline;
+    putch('!');
+    gotoxy(areas->X[j] + 1, areas->Y[i][j]);
+    insline;
+    putch('!');
+}
+
+void printDarkAreas(int i, int j, int k, struct board* areas)
+{
+    gotoxy(areas->X[j], areas->Y[i][j]);
+    insline;
+    putch(':');
+    gotoxy(areas->X[j] + 1, areas->Y[i][j]);
+    insline;
+    putch(':');
+}
+
+void printPawns(struct board* areas)
+{
+    for (int i = 0; i < 15; i++)
+    {
+        int k = i;
+        for (int j = 0; j < AREA_AMOUNT; j++)
+        {
+            if (i > 4)
+            {
+                k = 4;                              
+            }
+            if (areas->inside[i][j] == '[')
+            {
+                printWhitePawns(i, j, k, areas);                
+            }
+            else  if (areas->inside[i][j] == '#')
+            {
+                printDarkPawns(i, j, k, areas);              
+                
+            }
+            if (i <= 4)
+            {
+                if (areas->inside[i][j] == '!')
+                {
+                    printWhiteAreas(i, j, k, areas);
+
+                }
+                else if (areas->inside[i][j] == ':')
+                {
+                    printDarkAreas(i, j, k, areas);
+                   
+                }
+            }
+        }
+    }
+    gotoxy(MENU_X, MENU_Y);
+
+}                                                                       //////////////////////////////////////////////
+
+
+
+
+
+void player1starts()                                                //funkcje do wyswietlania menu startowego
+{
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 11);
+    printf("first one starts");
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 12);
+    printf("press enter to start the game");
+}
+
+void player2starts()
+{
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 11);
+    printf("second one starts");
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 12);
+    printf("press enter to start the game");
+}
+
+void adjustingNamesN1(char player1name[MAX_LETTERS], char player2name[MAX_LETTERS], char name1[MAX_LETTERS], char name2[MAX_LETTERS])
+{
+    for (int i = 0; i < MAX_LETTERS; i++)
+    {
+        name1[i] = player1name[i];
+        name2[i] = player2name[i];
+    }
+}
+
+void adjustingNamesN2(char player1name[MAX_LETTERS], char player2name[MAX_LETTERS], char name1[MAX_LETTERS], char name2[MAX_LETTERS])
+{
+    for (int i = 0; i < MAX_LETTERS; i++)
+    {
+        name1[i] = player2name[i];
+        name2[i] = player1name[i];
+    }
+
+}
+
+void newGame(char player1name[MAX_LETTERS], char player2name[MAX_LETTERS], char name1[MAX_LETTERS], char name2[MAX_LETTERS])
+{
+    int n1 = throwDice();
+    int n2 = throwDice();
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY+8);
+    printf("first one: %d", n1);
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 9);
+    printf("second one: %d", n2);
+
+    if ( n1> n2)
+    {
+        adjustingNamesN1(player1name, player2name, name1, name2);
+        player1starts();
+        
+    }
+    else if (n2 > n1)
+    {
+        adjustingNamesN2(player1name, player2name, name1, name2);
+        player2starts();
+
+    }
+    else
+    {
+        newGame(player1name, player2name, name1, name2);
+    }
 
 }
 
 void printStartMenu()
 {
     gotoxy(PRINT_START_MENUX, PRINT_START_MENUY);
-    cout << "N - new game" << endl;
+    printf("N - new game\n");
     gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 1);
-    cout << "S - play from saved game" << endl;
+    printf("S - play from saved game\n");
     gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 3);
 
 }
 
-void startMenu(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_HIGHT], int areasY[AREA_HIGHT][AREA_AMOUNT], int amountOfPawns[AREA_AMOUNT], char player1name[MAX_LETTERS], char player2name[MAX_LETTERS])
-{   
-    printStartMenu();
+void printBeginingOfGame(struct board* areas, char player1name[MAX_LETTERS], char player2name[MAX_LETTERS], char name1[MAX_LETTERS], char name2[MAX_LETTERS])
+{
+    newGame(player1name, player2name, name1, name2);
+    getch();
+    clrscr();
+    gotoxy(1, 1);
+    printBoard(name1, name2);
+    printPawns(areas);
 
-    if (getche() == 'N')
+}
+
+void readSavedGame(struct board*areas)
+{
+    FILE* file;
+    file = fopen(FILE_NAME, "r");
+    if (!file)
     {
-        /*cout << "Enter name of first player: ";
-        for (int i = 0; i < MAX_LETTERS; i++)
-        {
-            player1name[i] = getche();
-
-        }
-        cout << "Enter name of second player: ";
-        for (int i = 0; i < MAX_LETTERS; i++)
-        {
-            player2name[i] = getche();
-
-        }*/
-        newGame(player1name, player2name);
-        getch();        
-        clrscr();                
-        gotoxy(1, 1);
-        printBoard();
-        printPawns(areas, areasX, areasY, amountOfPawns);
-        
-
+        printf("Error, cant open a file");
     }
-    else if (getche() == 's')
+    else
     {
-        //otwieranie zapisanej gry
-        FILE* file;
-        file = fopen(FILE_NAME, "r");
-        if (file)
-        {
-            cout << "dziala";
-        }
-        else
-        {
-            cout << "nie dziala";
-        }
 
-        size_t err =fread(areas, sizeof(char), PAWNS_AMOUNT * AREA_AMOUNT, file);
-       
+        size_t err = fread(areas->inside, sizeof(char), PAWNS_AMOUNT * AREA_AMOUNT, file);
+        if (err != PAWNS_AMOUNT * AREA_AMOUNT)
+        {
+            printf("Error, problem with reading from file");
+        }
         fclose(file);
-
-        
-        cout << "kot";
-        newGame(player1name, player2name);
-        getch();
-        clrscr();
-        gotoxy(1, 1);
-        printBoard();
-        printPawns(areas, areasX, areasY, amountOfPawns);
-
-
     }
 
 }
 
-void highlightWhitePawns(int optionMove, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int i)
+void enterPlayerName(char player1name[MAX_LETTERS], char player2name[MAX_LETTERS])
+{
+    char l;
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 5);
+    printf("Enter name of first player: ");
+    for (int i = 0; i < MAX_LETTERS; i++)
+    {
+        player1name[i] = inputChar();
+    }
+
+    gotoxy(PRINT_START_MENUX, PRINT_START_MENUY + 6);
+    printf("Enter name of second player: ");
+    for (int i = 0; i < MAX_LETTERS; i++)
+    {
+        player2name[i] = inputChar();
+    }
+
+}
+
+void startMenu(struct board* areas, char player1name[MAX_LETTERS], char player2name[MAX_LETTERS], char name1[MAX_LETTERS], char name2[MAX_LETTERS])
+{
+    printStartMenu();
+
+    char option = inputChar();
+
+    if (option == 'N')
+    {
+        enterPlayerName(player1name, player2name);
+        printBeginingOfGame(areas, player1name, player2name, name1, name2);
+
+
+    }
+    else if (option == 'S')
+    {
+        readSavedGame(areas);
+        printBeginingOfGame(areas, player1name, player2name, name1, name2);
+
+    }                                                                                      
+
+}                                                                                                  ///////////////////////////////////////////////
+
+
+
+
+void highlightWhitePawns(int optionMove, struct board* areas, int i)                             // funkcje do podswietlania po³ na które moze pojsc gracz
 {
     textcolor(YELLOW);
-    gotoxy(areasX[optionMove], areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove], areas->Y[i][optionMove]);
     insline;
     putch('[');
-    gotoxy(areasX[optionMove] + 1, areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove] + 1, areas->Y[i][optionMove]);
     insline;
     putch(']');
     gotoxy(1, 27);
 
 }
 
-void highlightDarkPawns(int optionMove, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int i)
+void highlightDarkPawns(int optionMove, struct board* areas, int i)
 {
     textcolor(YELLOW);
-    gotoxy(areasX[optionMove], areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove], areas->Y[i][optionMove]);
     insline;
     putch('#');
-    gotoxy(areasX[optionMove] + 1, areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove] + 1, areas->Y[i][optionMove]);
     insline;
     putch('#');
     gotoxy(1, 27);
 }
 
-void highlightWhiteAreas(int optionMove, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int i)
+void highlightWhiteAreas(int optionMove, struct board* areas, int i)
 {
     textcolor(YELLOW);
-    gotoxy(areasX[optionMove], areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove], areas->Y[i][optionMove]);
     insline;
     putch('!');
-    gotoxy(areasX[optionMove] + 1, areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove] + 1, areas->Y[i][optionMove]);
     insline;
     putch('!');
     gotoxy(1, 27);
 }
 
-void highlightDarkAreas(int optionMove, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int i)
+void highlightDarkAreas(int optionMove, struct board* areas, int i)
 {
     textcolor(YELLOW);
-    gotoxy(areasX[optionMove], areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove], areas->Y[i][optionMove]);
     insline;
     putch(':');
-    gotoxy(areasX[optionMove] + 1, areasY[i][optionMove]);
+    gotoxy(areas->X[optionMove] + 1, areas->Y[i][optionMove]);
     insline;
     putch(':');
     gotoxy(1, 27);
 
 }
 
-void highlight(int* optionMove, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], char areas[PAWNS_AMOUNT][AREA_AMOUNT])
+void highlight(int* optionMove, struct board* areas)
 {
     for (int i = 0; i < AREA_HIGHT; i++)
     {
-        if (areas[i][*optionMove] == '[')
+        if (areas->inside[i][*optionMove] == '[')
         {
-            highlightWhitePawns(*optionMove, areasX, areasY, i);
+            highlightWhitePawns(*optionMove, areas, i);
         }
-        else if (areas[i][*optionMove] == '#')
+        else if (areas->inside[i][*optionMove] == '#')
         {
-            highlightDarkPawns(*optionMove, areasX, areasY, i);
+            highlightDarkPawns(*optionMove,areas, i);
         }
-        else if (areas[i][*optionMove] == '!')
+        else if (areas->inside[i][*optionMove] == '!')
         {
-            highlightWhiteAreas(*optionMove, areasX, areasY, i);
+            highlightWhiteAreas(*optionMove, areas, i);
         }
-        else if (areas[i][*optionMove] == ':')
+        else if (areas->inside[i][*optionMove] == ':')
         {
-            highlightDarkAreas(*optionMove, areasX, areasY, i);
+            highlightDarkAreas(*optionMove, areas, i);
         }
     }
     textcolor(MAGENTA);
-}
+}                                                                                               //////////////////////////////////////////////////
 
 
 
-int checkPossibilityOfMoveForPlayer1(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int optionMove, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+
+int checkPossibilityOfMoveForPlayer1(int optionMove, struct board* areas)                     //sprawdzanie mo¿liwoœci ruchu dla player1 i player2
 {
     bool move = false;
-    if (areas[0][optionMove] == '#')
+    if (areas->inside[0][optionMove] == '[')
     {
-        if (areas[1][optionMove] == '!' || areas[1][optionMove] == ':')
-        {
-            highlight(&optionMove, areasX, areasY, areas);
-            move = true;
-            return 3;
-        }
-    }
-    else if (areas[0][optionMove] == '[')
-    {
-        highlight(&optionMove, areasX, areasY, areas);
+        highlight(&optionMove, areas);
         move = true;
     }
-    else if (areas[0][optionMove] == '!' || areas[0][optionMove] == ':')
+    else if (areas->inside[0][optionMove] == '!' || areas->inside[0][optionMove] == ':')
     {
-        highlight(&optionMove, areasX, areasY, areas);
+        highlight(&optionMove, areas);
         move = true;
     }
     if (move)
@@ -655,27 +718,17 @@ int checkPossibilityOfMoveForPlayer1(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int 
     }
 }
 
-
-int checkPossibilityOfMoveForPlayer2(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int optionMove, int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+int checkPossibilityOfMoveForPlayer2(int optionMove, struct board* areas)
 {
     bool move = false;
-    if (areas[0][optionMove] == '[')
+    if (areas->inside[0][optionMove] == '#')
     {
-        if (areas[0][optionMove] == '!' || areas[0][optionMove] == ':')
-        {
-            highlight(&optionMove, areasX, areasY, areas);
-            move = true;
-            return 3;
-        }
-    }
-    else if (areas[0][optionMove] == '#')
-    {
-        highlight(&optionMove, areasX, areasY, areas);
+        highlight(&optionMove, areas);
         move = true;
     }
-    else if (areas[0][optionMove] == '!' || areas[0][optionMove] == ':')
+    else if (areas->inside[0][optionMove] == '!' || areas->inside[0][optionMove] == ':')
     {
-        highlight(&optionMove, areasX, areasY, areas);
+        highlight(&optionMove,areas);
         move = true;
     }
     
@@ -688,446 +741,662 @@ int checkPossibilityOfMoveForPlayer2(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int 
         return 0;
     }
 
-}
+}                                                                     ///////////////////////////////////////////
 
-void changeValuesInAreas(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int start)
+
+
+void changeValuesInAreas(struct board* areas, int start)                                 //zmaina warosci w tablicy inside, na podsatie której drukuja sie pionki
 {
     for (int i = 0; i < PAWNS_AMOUNT; i++)
     {
-        if (areas[i + 1][start - 1] == '!' || areas[i + 1][start - 1] == ':')
+        if (areas->inside[i + 1][start - 1] == '!' || areas->inside[i + 1][start - 1] == ':')
         {
             if ((start - 1) % 2)
             {
-                areas[i][start - 1] = ':';
-                //printPawns(areas, areasX, areasY, amountOfPawns);                    
+                areas->inside[i][start - 1] = ':';                                   
             }
             else
             {
-                areas[i][start - 1] = '!';
-                //printPawns(areas, areasX, areasY, amountOfPawns);                    
+                areas->inside[i][start - 1] = '!';                
             }
         }
-        else
-        {
-            continue;
-        }
     }
 }
 
-void changeValuesInAreasForPlayer1(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int finish)
+void changeValuesInAreasForPlayer1(struct board* areas, int finish)
 {
     for (int i = 0; i < PAWNS_AMOUNT; i++)
     {
-        if (areas[i][finish - 1] == '!' || areas[i][finish - 1] == ':')
+        if (areas->inside[i][finish - 1] == '!' || areas->inside[i][finish - 1] == ':')
         {
-            areas[i][finish - 1] = '[';
-            // printPawns(areas, areasX, areasY, amountOfPawns);
+            areas->inside[i][finish - 1] = '[';
             break;
 
         }
-        /* else
-         {
-             continue;
-         }*/
     }
-
 }
 
-void changeValuesInAreasForPlayer2(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int finish)
+void changeValuesInAreasForPlayer2(struct board* areas, int finish)
 {
     for (int i = 0; i < PAWNS_AMOUNT; i++)
     {
-        if (areas[i][finish - 1] == '!' || areas[i][finish - 1] == ':')
+        if (areas->inside[i][finish - 1] == '!' || areas->inside[i][finish - 1] == ':')
         {
-            areas[i][finish - 1] = '#';
-            // printPawns(areas, areasX, areasY, amountOfPawns);
+            areas->inside[i][finish - 1] = '#';
             break;
 
         }
-        /* else
-         {
-             continue;
-         }*/
+       
+    }
+
+}                                                                                                       ///////////////////////////
+
+
+
+void changeValues_PawnsPlayer1(struct board* areas, int finish)                                    //zmiana w areas i drukowanie pionków
+{                                                                                                  //powstaly zeby zmniejszyc funkcje
+    changeValuesInAreasForPlayer1(areas, finish);
+    printPawns(areas);
+}
+
+void changeValues_PawnsPlayer2(struct board* areas, int finish)
+{
+    changeValuesInAreasForPlayer2(areas, finish);
+    printPawns(areas);
+}                                                                                           /////////////////////////////////////////////
+
+
+
+
+bool showMovesOptionsForPlayer1DubletOnlyOne(int n1, int start, struct board* areas)                    //sparwdzanie mo¿liwosci ruchów dla róznych opcji dubleta
+{                                                                                                      // only one-n1
+    int optionMove = start+n1-1;                                                                        // only two - n1 i n1*2
+    if (!checkPossibilityOfMoveForPlayer1(optionMove, areas))
+    {
+        looseTrun();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
+void showMovesOptionsForPlayer1DubletOnlyTwo(int n1, int start, struct board* areas)
+{
+    bool possibleMove = false;
+    int optionMove = start+n1 * 2-1;
+    if (!checkPossibilityOfMoveForPlayer1(optionMove, areas))
+    {
+        possibleMove=false;
+    }
+
+    possibleMove = (showMovesOptionsForPlayer1DubletOnlyOne(n1, start, areas));
+    if (!possibleMove)
+    {
+        looseTrun();
+        return;
     }
 
 }
 
-void showMovesOptionsForPlayer1DubletOnlyOne(int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+bool showMovesOptionsForPlayer2DubletOnlyOne(int n1, int start, struct board* areas)
 {
-    int optionMove = n1;
-    checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
+    int optionMove = start-n1-1;
+    if (!checkPossibilityOfMoveForPlayer2(optionMove, areas))
+    {
+        looseTrun();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 
-void showMovesOptionsForPlayer1DubletOnlyTwo(int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void showMovesOptionsForPlayer2DubletOnlyTwo(int n1, int start, struct board* areas)
 {
-    int optionMove = n1 * 2;
-    checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
+    bool possibleMove = false;
+    int optionMove = start-n1 * 2-1;
+    if (!checkPossibilityOfMoveForPlayer2(optionMove, areas))
+    {
+        possibleMove = false;
+    }
 
-    showMovesOptionsForPlayer1DubletOnlyOne(n1, areas, areasX, areasY);
+    possibleMove = (showMovesOptionsForPlayer2DubletOnlyOne(n1, start, areas));
+    if (!possibleMove)
+    {
+        looseTrun();
+        return;
+    }
+                                                                                                        ////////////////////////////////
 }
 
 
-void showMovesOptionsForPlayer1DubletAll(int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = n1 * 4;
-    checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
 
-    showMovesOptionsForPlayer1DubletOnlyTwo(n1, areas, areasX, areasY);
+void option1Player1(int n1, int start, struct board* areas)                          // opcja dla n1 i warunek sprawdzajacy czy mo¿na wykonac ruch player1 i player2
+{
+    int optionMove = start + n1 - 1;
+    if (!checkPossibilityOfMoveForPlayer1(optionMove, areas))
+    {
+        looseTrun();
+        return;
+    }
+    changeValuesInAreas(areas, start);
+    finishComent();
+    int finish = inputInt();
+    if (finish == optionMove + 1)
+    {
+        changeValuesInAreasForPlayer1(areas, finish);
+
+    }
+    printPawns(areas);
+
+}
+
+void option1Player2(int n1, int start, struct board* areas)
+{
+    int optionMove = start - n1 - 1;
+    if (!checkPossibilityOfMoveForPlayer2(optionMove, areas))
+    {
+        looseTrun();
+        return;
+    }
+    changeValuesInAreas(areas, start);
+    finishComent();
+    int finish = inputInt();
+    if (finish == optionMove + 1)
+    {
+        changeValuesInAreasForPlayer2(areas, finish);
+
+    }
+    printPawns(areas);
+
+}
+
+void conditionForOption1Player1(int n1, int start,  struct board* areas)
+{
+    if (start + n1 > AREA_AMOUNT)
+    {
+        looseTrun();
+        return;
+    }
+    else
+    {
+
+        option1Player1(n1, start, areas);
+    }
+
+}
+
+void conditionForOption1Player2(int n1 ,int start, struct board* areas)
+{
+    if (start-n1 <1)
+    {
+        looseTrun();
+        return;
+    }
+    else
+    {
+        option1Player2(n1, start,  areas);
+    }
+
+}                                                                             ///////////////////////////////////////
+
+
+
+
+void option2Player1(int n1, int start, struct board* areas)                       // opcja dla n1*2 i warunke sprawdzajacy czy da sie wykonac ruch player1 player2
+{
+    int optionMove = start + n1 * 2 - 1;
+    if (!checkPossibilityOfMoveForPlayer1(optionMove, areas))
+    {
+        looseTrun();
+        return;
+    }
+    changeValuesInAreas(areas, start);
+    finishComent();
+    int finish = inputInt();
+    if (finish == optionMove + 1)
+    {
+        changeValuesInAreasForPlayer1(areas, finish);
+    }
+
+}
+
+void option2Player2(int n1, int start, struct board* areas)
+{
+    int optionMove = start - n1 * 2 - 1;
+    if (!checkPossibilityOfMoveForPlayer2(optionMove, areas))
+    {
+        looseTrun();
+        return;
+    }
+    changeValuesInAreas(areas, start);
+    finishComent();
+    int finish = inputInt();
+    if (finish == optionMove + 1)
+    {
+        changeValuesInAreasForPlayer2(areas, finish);
+    }
+
+
+
+
+}
+
+void conditionForOption2Player1(int n1, int start, struct board* areas)
+{
+    if (start + n1 * 2 > AREA_AMOUNT)
+    {
+        looseTrun();
+        return;
+    }
+    else
+    {
+        option2Player1(n1, start, areas);
+    }
+
+}
+
+void conditionForOption2Player2(int n1, int start, struct board* areas)
+{
+    if (start - n1 * 2 > AREA_AMOUNT)
+    {
+        looseTrun();
+        return;
+    }
+    else
+    {
+        option2Player2(n1, start, areas);
+    }
     
-}
+}                                                                                      ///////////////////////////////////////////////////////////////////
 
 
 
 
-void showMovesOptionsForPlayer2DubletOnlyOne(int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void dubletOption4Player1(int n1, int start, struct board* areas)                       // opcja n1 * 4 dla player1 i player2 i warunke czy mozna zrobic ruch
 {
-    int optionMove = n1;
-    checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-}
-
-
-void showMovesOptionsForPlayer2DubletOnlyTwo(int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = n1 * 2;
-    checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-
-    showMovesOptionsForPlayer2DubletOnlyOne(n1, areas, areasX, areasY);
-}
-
-
-void showMovesOptionsForPlayer2DubletAll(int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = n1 * 4;
-    checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-
-    showMovesOptionsForPlayer2DubletOnlyTwo(n1, areas, areasX, areasY);
-
-}
-
-void option1Player1(int con1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = con1;
-    checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
-    int finish = input();
-    if (finish == optionMove)
+    int optionMove = (start + (n1 * 4)) - 1;
+    if (!checkPossibilityOfMoveForPlayer1(optionMove, areas))
     {
-        changeValuesInAreasForPlayer1(areas, finish);
-
-    }
-
-}
-
-void option1Player2(int con1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = con1;
-    checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-    int finish = input();
-    if (finish == optionMove)
-    {
-        changeValuesInAreasForPlayer2(areas, finish);
-
-    }
-
-}
-
-void conditionForOption1(int con1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    if (con1 > AREA_AMOUNT)
-    {
-        printf("move not possible u lose ur turn");
+        looseTrun();
         return;
     }
-    else
-    {
-        option1Player1(con1, areas, areasX, areasY);
-    }
+    changeValuesInAreas(areas, start);
 
-}
-
-void conditionForOption2(int con1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    if (con1 <1)
-    {
-        printf("move not possible u lose ur turn");
-        return;
-    }
-    else
-    {
-        option1Player2(con1, areas, areasX, areasY);
-    }
-
-}
-
-
-
-
-void dubletOption4Player1(int n1, int start, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = start + n1 * 4;
-    checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
-    int finish = input();
-    if (finish == optionMove)
+    finishComent();
+    int finish = inputInt();
+    if (finish == optionMove + 1)
     {
         changeValuesInAreasForPlayer1(areas, finish);
     }
 
 }
 
-
-void dubletOption4Player2(int n1, int start, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void dubletOption4Player2(int n1, int start, struct board* areas)
 {
-    int optionMove = start - n1 * 4;
-    checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-    int finish = input();
-    if (finish == optionMove)
+    int optionMove = (start - (n1 * 4)) - 1;
+    if (!checkPossibilityOfMoveForPlayer2(optionMove, areas))
+    {
+        looseTrun();
+        return;
+    }
+    changeValuesInAreas(areas, start);
+
+    finishComent();
+    int finish = inputInt();
+    if (finish == optionMove + 1)
     {
         changeValuesInAreasForPlayer2(areas, finish);
     }
 
 }
 
-void option2Player1(int con2, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void conditionDublet4Player1(int start, int n1, struct board* areas)                                
 {
-    int optionMove = con2;
-    checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
-    int finish = input();
-    if (finish == optionMove)
+    if (start + n1 * 4 > AREA_AMOUNT)
     {
-        changeValuesInAreasForPlayer1(areas, finish);
-    }
-
-}
-
-void option2Player2(int con2, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = con2;
-    checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-    int finish = input();
-    if (finish == optionMove)
-    {
-        changeValuesInAreasForPlayer2(areas, finish);
-    }
-
-}
-
-void dubletOption2_2Player1(int n1, int con2, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    option2Player1(con2, areas, areasX, areasY);
-
-    int start = input();
-    con2 = start + n1 * 2;
-    if (con2 > AREA_AMOUNT)
-    {
-        printf("move not possible u lose ur turn");
+        looseTrun();
         return;
     }
     else
     {
-        option2Player1(con2, areas, areasX, areasY);
-    }
+        dubletOption4Player1(n1, start, areas);
 
+    }
+}
+
+void conditionDublet4Player2(int start, int n1, struct board* areas)
+{
+    if ((start - n1 * 4) < 1)
+    {
+        looseTrun();
+        return;
+    }
+    else
+    {
+        dubletOption4Player2(n1, start, areas);
+
+    }
+}                                                                            ///////////////////////////////////////////////////////////
+
+
+
+                                                                        
+
+
+
+
+void dubletOption2_2Player1(int n1, int start, struct board* areas)                //opcja n1*2 i n1*2 dla player1 i player2 i warunek czy mozna zrobic ruch             
+{
     
 
+    option2Player1(n1, start, areas);
+    
+    printPawns(areas);
+
+    startComent();
+    start = inputInt();
+
+    conditionForOption2Player1(n1, start, areas);    
 }
 
 
-void dubletOption2_2Player2(int n1, int con2, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void dubletOption2_2Player2(int n1, int start, struct board* areas)
 {
-    option2Player2(con2, areas, areasX, areasY);
+    option2Player2(n1, start, areas);
 
-    int start = input();
-    con2 = start - n1 * 2;
+    printPawns(areas);
+
+    startComent();
+    start = inputInt();
+    
+    conditionForOption2Player2(n1, start, areas);
+}   
+
+void conditionDublet2Player2(int con2, int n1, int start, struct board* areas)
+{
     if (con2 < 1)
     {
-        printf("move not possible u lose ur turn");
+        looseTrun();
         return;
     }
     else
     {
-        option2Player2(con2, areas, areasX, areasY);
+        dubletOption2_2Player2(n1, start, areas);
     }
-
-
 }
 
-
-
-void dubletOption1_1_1_1Player1(int n1, int con1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void conditionDublet2Player1(int con2, int n1, int start, struct board* areas)        
 {
-    option1Player1(con1, areas, areasX, areasY);
+    if (con2 > AREA_AMOUNT)
+    {
+        looseTrun();
+        return;
+    }
+    else
+    {
+        dubletOption2_2Player1(n1, start, areas);
+    }
+}                                                                                                          ///////////////////////////////////////////////
+
+
+
+
+
+void dubletOption1_1_1_1Player1(int n1, int start, struct board* areas)               // opcja dla n1 n1 n1 n1 dla player1 i player2 i warunke wykonania ruchu
+{
+    option1Player1(n1,start, areas);
+
+    
+    
     for (int i = 0; i < 3; i++)
     {
-        int start = input();
-        con1 = start + n1;
-        conditionForOption1(con1, areas, areasX, areasY);
+        startComent();
+        start = inputInt();
+
+        conditionForOption1Player1(n1, start, areas);
         
     }
 }
 
-void dubletOption1_1_1_1Player2(int n1, int con1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void dubletOption1_1_1_1Player2(int n1, int start, struct board* areas)
 {
-    option1Player2(con1, areas, areasX, areasY);
-    for (int i = 0; i < 3; i++)
+    option1Player2(n1, start, areas);   
+
+    
+    for (int i = 0; i < 3; i++) 
     {
-        int start = input();
-        con1 = start - n1;
-        conditionForOption2(con1, areas, areasX, areasY);
-        option1Player2(con1, areas, areasX, areasY);
+        startComent();
+        start = inputInt();
+        
+
+        conditionForOption1Player2(n1, start, areas);
+
     }
+} 
+
+void conditionDublet1Player1(int con1, int n1, int start, struct board* areas)
+{
+    if (con1 > AREA_AMOUNT)
+    {
+        looseTrun();
+        return;
+
+    }
+    else
+    {
+        dubletOption1_1_1_1Player1(n1, start, areas);
+    }
+
 }
 
-void option211Player1(int n1, int con1, int finish, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void conditionDublet1Player2(int con1, int n1, int start, struct board* areas)
+{
+    if (con1 < 1)
+    {
+        looseTrun();
+        return;
+
+    }
+    else
+    {
+        dubletOption1_1_1_1Player2(n1, start, areas);
+    }
+
+}                                                                                                  //////////////////////////////////
+
+
+
+void option211Player1(int n1, int start, int finish, struct board* areas)                     // opcja n1*2 n1 n1 dla player1 i player2
 {
     changeValuesInAreasForPlayer1(areas, finish);
+    printPawns(areas);
     for (int i = 0; i < 2; i++)
     {
-        int start = input();
-        con1 = start + n1;
-        conditionForOption1(con1, areas, areasX, areasY);
+        startComent();
+        start = inputInt();
+
+        conditionForOption1Player1(n1, start, areas);
     }
+    
 
 }
 
 
-void option211Player2(int n1, int con1, int finish, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void option211Player2(int n1, int start, int finish, struct board* areas)
 {
-    changeValuesInAreasForPlayer2(areas, finish);
+    changeValues_PawnsPlayer2(areas, finish);
+    
     for (int i = 0; i < 2; i++)
     {
-        int start = input();
-        con1 = start - n1;
-        option1Player2(con1, areas, areasX, areasY);
+        startComent();
+        start = inputInt();
+        
+
+        conditionForOption1Player2(n1, start, areas);       
+
     }
 
+}                                                                              //////////////////////////////////////////////////////
+
+
+
+void option_12Player1(int n1, int start, int finish, struct board*areas)           //opcja _ n1 n1*2 oraz opcja _ n1*2 n1 dla player1 
+{
+    changeValues_PawnsPlayer1(areas, finish);
+    start = inputInt();
+    
+    conditionForOption2Player1(n1, start, areas);
 }
 
-void option112_121Player1(int n1, int finish, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void option_21Player1(int n1, int start, int finish, struct board* areas)
 {
-    changeValuesInAreasForPlayer1(areas, finish);
-    int start = input();
+    changeValues_PawnsPlayer1(areas, finish);
+
+    startComent();
+    start = inputInt();
+
+    conditionForOption1Player1(n1, start, areas);
+}                                                                       ///////////////////////////////////////////////////////////////
+
+
+
+void opt112_121Player1(int n1, int finish, struct board* areas)                      //opcja n1 n1 n1*2
+{                                                                                    // opcja n1 n1*2 n1 dla player1 
+    changeValues_PawnsPlayer1(areas, finish);
+
+    startComent();
+    int start = inputInt();
+    
     if ((start + n1) > AREA_AMOUNT)
     {
         if ((start + n1 * 2) > AREA_AMOUNT)
         {
-            printf("move not possible u lose ur turn");
+            looseTrun();
             return;
         }
     }
-    showMovesOptionsForPlayer1DubletOnlyTwo(n1, areas, areasX, areasY);
-    finish = input();
-    int con2 = start + n1 * 2;
-    if (finish == start + n1 || finish == con2)
+    showMovesOptionsForPlayer1DubletOnlyTwo(n1, start, areas);
+    changeValuesInAreas(areas, start);
+
+    finishComent();
+    finish = inputInt();
+
+    if (finish == start + n1 || finish == start + n1 * 2)
     {
         if (finish == start + n1)
         {
             //n1
-            changeValuesInAreasForPlayer1(areas, finish);
-            start = input();
-            con2 = start + n1 * 2;
-            if (con2 > AREA_AMOUNT)
-            {
-                printf("move not possible u lose ur turn");
-
-            }
-            else
-            {
-                option2Player1(con2, areas, areasX, areasY);
-            }
-
+            option_12Player1(n1, start, finish, areas);          
 
         }
         else
         {
             //n1*2
-            changeValuesInAreasForPlayer1(areas, finish);
-            start = input();
-            int con1 = start + n1;
-            conditionForOption1(con1, areas, areasX, areasY);
-
+            option_21Player1(n1, start, finish, areas);
         }
     }
+}                                                                                       /////////////////////////////////////
+
+
+
+void option_12Player2(int n1, int start, int finish, struct board*areas)                           //opcja _ n1 n1*2 oraz opcja _ n1*2 n1 dla player2
+{
+    changeValues_PawnsPlayer2(areas, finish);
+    startComent();
+    start = inputInt();
+    conditionForOption2Player2(n1, start, areas);
+
 }
 
-
-void option112_121Player2(int n1, int finish, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void option_21Player2(int n1, int start, int finish, struct board*areas)
 {
-    changeValuesInAreasForPlayer2(areas, finish);
-    int start = input();
+    changeValues_PawnsPlayer2(areas, finish);
+
+    startComent();
+    start = inputInt();
+   
+
+    conditionForOption1Player2(n1, start, areas);
+}                                                                                       ///////////////////////////////////////////////
+
+
+
+
+void option112_121Player2(int n1, int finish, struct board* areas)                            //opcja n1 n1 n1*2
+{                                                                                             // opcja n1 n1*2 n1 dla player2
+    changeValues_PawnsPlayer2(areas, finish);
+
+    startComent();
+    int start = inputInt();
+   
+    
     if ((start - n1) <1)
     {
         if ((start - n1 * 2) <1)
         {
-            printf("move not possible u lose ur turn");
+            looseTrun();
             return;
         }
     }
-    showMovesOptionsForPlayer2DubletOnlyTwo(n1, areas, areasX, areasY);
-    finish = input();
-    int con2 = start - n1 * 2;
-    if (finish == start - n1 || finish == con2)
+    showMovesOptionsForPlayer2DubletOnlyTwo(n1, start, areas);
+    changeValuesInAreas(areas, start);
+    finishComent();
+    finish = inputInt();
+    if (finish == start - n1 || finish == start-n1*2)
     {
         if (finish == start - n1)
         {
             //n1
-            changeValuesInAreasForPlayer2(areas, finish);
-            start = input();
-            con2 = start - n1 * 2;
-            if (con2 < 1)
-            {
-                printf("move not possible u lose ur turn");
-                return;
-            }
-            else
-            {
-                option2Player1(con2, areas, areasX, areasY);
-            }
-
-
+            option_12Player2(n1, start, finish, areas);          
         }
         else
         {
             //n1*2
-            changeValuesInAreasForPlayer2(areas, finish);
-            start = input();
-            int con1 = start - n1;
-            conditionForOption2(con1, areas, areasX, areasY);
-
+            option_21Player2(n1, start, finish, areas);          
         }
     }
-}
+}                                                                                      //////////////////////////////////////
 
 
-void dubletOption2_1_1Player1(int n1, int con1, int con2, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    showMovesOptionsForPlayer1DubletOnlyTwo(n1, areas, areasX, areasY);
-    int finish = input();
-    if (finish == con1 || finish == con2)
+
+void dubletOption2_1_1Player1(int n1, int start, struct board* areas)                //opcja kiedy ruszamy trzema pionkami po wyrzuceniu dubletu 
+{                                                                                    // trzy wrianty dla player1 i player2 
+    showMovesOptionsForPlayer1DubletOnlyTwo(n1, start, areas);
+    changeValuesInAreas(areas, start);
+    finishComent();
+    int finish = inputInt();
+    if (finish == start+n1 || finish == start+n1*2)
     {
-        if (finish == con2)
+        if (finish == start + n1 * 2)
         {
-            if (con2 > AREA_AMOUNT)
+            if (start + n1 * 2 > AREA_AMOUNT)
             {
-                printf("move not possible u lose ur turn");
+                looseTrun();
                 return;
             }
             else
             {
-                option211Player1(n1, con1, finish, areas, areasX, areasY);
+                option211Player1(n1, start, finish, areas);
             }
             //n1*2
             
         }
         else
         {
-            if (con1 > AREA_AMOUNT)
+            if (start+n1 > AREA_AMOUNT)
             {
-                printf("move not possible u lose ur turn");
+                looseTrun();
                 return;
             }
             else
             {
-                option112_121Player1(n1, finish, areas, areasX, areasY);
+                opt112_121Player1(n1, finish, areas);
             }
             //n1
                         
@@ -1136,217 +1405,107 @@ void dubletOption2_1_1Player1(int n1, int con1, int con2, char areas[PAWNS_AMOUN
 
 }
 
-void dubletOption2_1_1Player2(int n1, int con1, int con2, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    showMovesOptionsForPlayer1DubletOnlyTwo(n1, areas, areasX, areasY);
-    int finish = input();
-    if (finish == con1 || finish == con2)
+void dubletOption2_1_1Player2(int n1, int start, struct board* areas)                        
+{                                                                                           
+    showMovesOptionsForPlayer2DubletOnlyTwo(n1, start, areas);
+    changeValuesInAreas(areas, start);
+    finishComent();
+    int finish = inputInt();
+    if (finish == start-n1 || finish == start-n1*2)
     {
-        if (finish == con2)
+        if (finish == start-n1*2)
         {
             //n1*2
-            option211Player2(n1, con1, finish, areas, areasX, areasY);
+            option211Player2(n1, start, finish, areas);
         }
         else
         {
             //n1
-            option112_121Player2(n1, finish, areas, areasX, areasY);
+            option112_121Player2(n1, finish, areas);
 
         }
     }
 
-}
+}                                                                                             ///////////////////////////////////////////////////
 
-void dubletPlayer1(int start, int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+
+
+
+
+void dubletPlayer1(int start, int n1, struct board* areas)                                  //dublet player1 i player2
 {
     int con1 = start + n1;
-    int con2 = start + n1 * 2;
+    int con2 = start + (n1 * 2);
 
 
-    //showMovesOptionsForPlayer1DubletAll(n1, areas, areasX, areasY);
-
-    cout << "How many pawns u want to move?";
-    int amount = input();
+    pawnsQuestion();
+    int amount = inputInt();
 
     
 
     if (amount == 1)
     {
-        if ((start + n1 * 4) > AREA_AMOUNT)
-        {
-            printf("move not possible u lose ur turn");
-            //return 0;
-        }
-        else
-        {
-            dubletOption4Player1(n1, start, areas, areasX, areasY);
-
-        }
+        conditionDublet4Player1(start, n1, areas);
     }
     else if (amount == 2)
     {
-        if (con2 > AREA_AMOUNT)
-        {
-            printf("move not possible u lose ur turn");
-            //return 0;
-        }
-        else
-        {
-            dubletOption2_2Player1(n1, con2, areas, areasX, areasY);
-        }
-       
+        conditionDublet2Player1(con2, n1, start, areas);      
 
     }
     else if (amount == 3)
     {
 
 
-        dubletOption2_1_1Player1(n1, con1, con2, areas, areasX, areasY);
+        dubletOption2_1_1Player1(n1, start, areas);
 
 
     }
     else if (amount == 4)
     {
-        if (con1 > AREA_AMOUNT)
-        {
-            printf("move not possible u lose ur turn");
-            return;
-
-        }
-        else
-        {
-            dubletOption1_1_1_1Player1(n1, con1, areas, areasX, areasY);
-        }
-
+        conditionDublet1Player1(con1, n1, start, areas);
     }
 
 }
 
-void dubletPlayer2(int start, int n1, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
+void dubletPlayer2(int start, int n1, struct board* areas)
 {
     int con1 = start - n1;
     int con2 = start - n1 * 2;
 
-
-    //showMovesOptionsForPlayer2DubletAll(n1, areas, areasX, areasY);
-
-    cout << "How many pawns u want to move?";
-    int amount = input();
+    pawnsQuestion();
+    int amount = inputInt();
 
     if (amount == 1)
     {
-        if ((start - n1 * 4) < 1)
-        {
-            printf("move not possible u lose ur turn");
-            return;
-
-        }
-        else
-        {
-            dubletOption4Player2(n1, start, areas, areasX, areasY);
-        }
+        conditionDublet4Player2(start, n1, areas);
+        
     }
     else if (amount == 2)
     {
-        if ((start - n1 * 2) < 1)
-        {
-            printf("move not possible u lose ur turn");
-            return;
-        }
-        else
-        {
-            dubletOption2_2Player2(n1, con2, areas, areasX, areasY);
-        }
+        conditionDublet2Player2(con2, n1, start, areas);
 
     }
     else if (amount == 3)
     {
 
 
-        dubletOption2_1_1Player2(n1, con1, con2, areas, areasX, areasY);
+        dubletOption2_1_1Player2(n1, start, areas);
 
 
     }
     else if (amount == 4)
     {
-        if (con1 < 1)
-        {
-            printf("move not possible u lose ur turn");
-            return;
-        }
-        else
-        {
-            dubletOption1_1_1_1Player2(n1, con1, areas, areasX, areasY);
-        }
+        conditionDublet1Player2(con1, n1, start, areas);
+       
 
     }
 
-}
+}                                                                                         ///////////////////////////////////////////////////////
 
 
-//zmiejszyc funkcje jeszce nie wiem jak
-void showMovesOptionsForPlayer1(int n1, int n2, int start, int beat, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = (start - 1 + n1);
-
-    if (areas[0][start - 1] == '[')
-    {
-        //rozpisaæ ta funkcje bo jest nie dokoñczona
-        beat = checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
-    }
-    if (beat != 3)
-    {
-        
-        int possibleMove = checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
-
-        optionMove = (start - 1 + n2);
-
-        possibleMove = checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
-
-        if (possibleMove == 1)
-        {
-            optionMove += n1;
-            checkPossibilityOfMoveForPlayer1(areas, optionMove, areasX, areasY);
-        }
-    }
-    else
-    {
-        cout << "u must beat";
-    }
-}
-
-//zmiejszycfunkcje jeszce nie wiem jak
-void showMovesOptionsForPlayer2(int n1, int n2, int start, int beat, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    int optionMove = (start - 1 - n1);
-
-    if (areas[0][start - 1] == '#')
-    {
-        beat = checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-    }
-    if (beat != 3)
-    {
-
-        int possibleMove= checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-
-        optionMove = (start - 1 - n2);
-
-        possibleMove = checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-
-        if (possibleMove == 1)
-        {
-            optionMove -= n1;
-            checkPossibilityOfMoveForPlayer2(areas, optionMove, areasX, areasY);
-        }
-    }
-    else
-    {
-        cout << "u must beat";
-    }
-}
 
 
-void changeValuesInAreasMovePlayer1(int n1, int n2, int start, int finish, int player, char areas[PAWNS_AMOUNT][AREA_AMOUNT])
+void changeValuesInAreasMovePlayer1(int n1, int n2, int start, int finish, int player, struct board* areas)          //funkcje do wykoniania ruchu player1
 {
     if (finish == start + n1 || finish == start + n2 || finish == start + n1 + n2)
     {
@@ -1355,7 +1514,117 @@ void changeValuesInAreasMovePlayer1(int n1, int n2, int start, int finish, int p
 
 }
 
-void changeValuesInAreasMovePlayer2(int n1, int n2, int start, int finish, int player, char areas[PAWNS_AMOUNT][AREA_AMOUNT])
+void insideOfShowMovesPlayer1(int n1, int n2, int start, int optionMove, struct board*areas)   //podfunkcja showMovesOptionsForPlayer1
+{
+    int possibleMove = checkPossibilityOfMoveForPlayer1(optionMove, areas);
+
+    optionMove = (start - 1 + n2);
+    if (optionMove + 1 < AREA_AMOUNT)
+    {
+        possibleMove = checkPossibilityOfMoveForPlayer1(optionMove, areas);
+
+
+    }
+    possibleMove = checkPossibilityOfMoveForPlayer1(optionMove, areas);
+
+    if (possibleMove)
+    {
+        optionMove += n1;
+        if (optionMove + 1 < AREA_AMOUNT)
+        {
+            checkPossibilityOfMoveForPlayer1(optionMove, areas);
+        }
+    }
+    else
+    {
+        looseTrun();
+    }
+
+}
+
+
+void showMovesOptionsForPlayer1(int n1, int n2, int start, int beat,int player, struct board* areas)       //pokazanie na planszy mozliwych ruchów
+{
+    int optionMove = (start - 1 + n1);
+    if (areas->inside[0][start - 1] == '[')
+    {
+        if (optionMove+1>AREA_AMOUNT)
+        {
+            looseTrun();
+            return;           
+            
+        }
+        else
+        {
+            insideOfShowMovesPlayer1(n1, n2, start, optionMove, areas);
+            
+        }
+    }
+    else
+    {
+        looseTrun();
+    }
+    
+}
+
+int correctPawnPlayer1(int start, struct board*areas)                          // sprawdzenie czy gracz wybral dobry pionek, jesi nie to utrata kolejki
+{
+    if (areas->inside[0][start - 1] != '[')
+    {
+        gotoxy(COMMENTS_X, COMMENTS_Y);
+        printf("Not ur pawn");
+        return 0;
+    }
+}
+
+void normalPlayer1(int n1, int n2, int start, int beat, int player, struct board*areas)               //podfunkcja movePlayer1
+{
+    showMovesOptionsForPlayer1(n1, n2, start, beat, player, areas);
+
+
+    finishComent();
+    int finish = inputInt();
+
+    changeValuesInAreasMovePlayer1(n1, n2, start, finish, player, areas);
+    changeValuesInAreas(areas, start);
+    printPawns(areas);
+    return;
+}
+
+void movePlayer1(struct board* areas, int beat, int player)
+{
+    int n1 = throwDice();
+    int n2 = throwDice();
+    printDices(n1, n2);
+    putch('\n');
+
+    startComent();
+
+    int start = inputInt();
+    if (!correctPawnPlayer1(start, areas))
+    {
+        return;
+    }
+
+
+    if (n1 == n2)
+    {
+        dubletPlayer1(start, n1, areas);
+        printPawns(areas);
+        return;
+    }
+    else
+    {
+        normalPlayer1(n1, n2, start, beat, player, areas);
+        return;       
+    }
+}                                                                  /////////////////////////////////////////////////
+
+
+
+
+
+void changeValuesInAreasMovePlayer2(int n1, int n2, int start, int finish, int player, struct board* areas)           //funkcje do wykoniania ruchu player1
 {
     if (finish == start - n1 || finish == start - n2 || finish == start - n1 - n2)
     {
@@ -1363,152 +1632,189 @@ void changeValuesInAreasMovePlayer2(int n1, int n2, int start, int finish, int p
     }
 }
 
-void movePlayer1(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int beat, int player, int amountOfPawns[AREA_AMOUNT])
+void insideOfShowMovesPlayer2(int n1, int n2, int start, int optionMove, struct board* areas)                  //podfunkcja showMovesOptionsForPlayer2
 {
-    int n1 = throwDice();
-    int n2 = throwDice();
-    printDices(n1, n2);
-    putch('\n');
+    int possibleMove = checkPossibilityOfMoveForPlayer2(optionMove, areas);
 
-    cout << "Enter start area\n";
-
-    int start = input();
-
-
-    changeValuesInAreas(areas, start);
-
-    if (n1 == n2)
+    optionMove = (start - 1 - n2);
+    if (start - n2 > 1)
     {
-        dubletPlayer1(start, n1, areas, areasX, areasY);
-        cout << "dublet";
-    }
-    else
-    {
-        showMovesOptionsForPlayer1(n1, n2, start, beat, areas, areasX, areasY);
+        possibleMove = checkPossibilityOfMoveForPlayer2(optionMove, areas);
     }
 
-    cout << "Enter finish area\n";
-
-    int finish = input();
-
-    changeValuesInAreasMovePlayer1(n1, n2, start, finish, player, areas);
-
-    printPawns(areas, areasX, areasY, amountOfPawns);
-    //cout << "Next player move";
-
-}
-
-void movePlayer2(char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT], int beat, int player, int amountOfPawns[AREA_AMOUNT])
-{
-    int n1 = throwDice();
-    int n2 = throwDice();
-    printDices(n1, n2);
-    putch('\n');
-
-    cout << "Enter area from where u want to start\n";
-
-    int start = input();
-
-
-    changeValuesInAreas(areas, start);
-
-    if (n1 == n2)
+    if (possibleMove)
     {
-        dubletPlayer2(start, n1, areas, areasX, areasY);
-        cout << "dublet";
-    }
-    else
-    {
-        showMovesOptionsForPlayer2(n1, n2, start, beat, areas, areasX, areasY);
-    }
-
-    cout << "Enter area where u want to finish\n";
-    
-
-    int finish = input();
-
-    changeValuesInAreasMovePlayer2(n1, n2, start, finish, player, areas);
-
-    printPawns(areas, areasX, areasY, amountOfPawns);
-    //cout << "Next player move";
-    
-
-}
-
-void dubletOption2_1(int n1, int finish, int start, char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT])
-{
-    if (finish == start + n1 * 2)
-    {
-        //n1*2
-        //change values in areas
-
-    }
-    else
-    {
-        //n1
-        //change valus in areas
-        start = input();
-        showMovesOptionsForPlayer1DubletOnlyOne(n1, areas, areasX, areasY);
-        finish = input();
-        if (finish == start + n1)
+        optionMove -= n1;
+        if (start - n1 - n2 > 1)
         {
-            //n1
-            //change values in areas
+            checkPossibilityOfMoveForPlayer2(optionMove, areas);
         }
     }
-
-}
-
-int checkTimes(int n1, int start, int finish)
-{
-    
-    int k = finish - start;
-    int times = k / n1;
-    return times;
-}
-
-int saveGame(char areas[PAWNS_AMOUNT][AREA_AMOUNT])
-{
-    //napisac funkcje na zapisywanie
-
-    FILE* file;
-    //file = fopen(FILE_NAME, "w");
-
-    errno_t err = fopen_s(&file, FILE_NAME, "w");
-
-
-    if (err != 0 || file == NULL) {
-
-        printf("Error opening the file.\n");
-
-        return 1;
-    }
-    cout << sizeof(areas);
-    fwrite(areas, sizeof(areas[0][0]), PAWNS_AMOUNT*AREA_AMOUNT, file);
-    fclose(file);
-    cout << "kot";
-
-}
-
-void menu( char areas[PAWNS_AMOUNT][AREA_AMOUNT], int areasX[AREA_AMOUNT], int areasY[AREA_HIGHT][AREA_AMOUNT],int beat, int player, int amountOfPawns[AREA_AMOUNT])
-{
-    if (getch() == 'M')
+    else
     {
-        if (player == 1)
+        looseTrun();
+    }
+}
+
+void showMovesOptionsForPlayer2(int n1, int n2, int start, int beat, int player, struct board* areas)             //pokazanie na planszy mozliwych ruchów
+{
+    int optionMove = start - 1 - n1;
+    if (areas->inside[0][start - 1] == '#')
+    {
+        if (optionMove + 1 < 1)
         {
-            movePlayer1(areas, areasX, areasY, beat, player, amountOfPawns);
+            looseTrun();
+            return;
         }
         else
         {
-            movePlayer2(areas, areasX, areasY, beat, player, amountOfPawns);
+            insideOfShowMovesPlayer2(n1, n2, start, optionMove, areas);
         }
-    }
-    else if (getch() == 'S')
-    {
-        saveGame(areas);
+
 
     }
+    else
+    {
+        looseTrun();
+    }
+
+
 }
+
+int correctPawnPlayer2(int start, struct board*areas)                                                       // sprawdzenie czy gracz wybral dobry pionek, jesi nie to utrata kolejki
+{
+    if (areas->inside[0][start - 1] != '#')
+    {
+        gotoxy(COMMENTS_X, COMMENTS_Y);
+        printf("Not ur pawn");
+        return 0;
+    }
+
+}
+
+void normalPlayer2(int n1, int n2, int start, int beat, int player, struct board*areas)             //podfunkcja movePlayer2
+{
+    showMovesOptionsForPlayer2(n1, n2, start, beat, player, areas);
+    changeValuesInAreas(areas, start);
+    finishComent();
+
+
+    int finish = inputInt();
+
+    changeValuesInAreasMovePlayer2(n1, n2, start, finish, player, areas);
+
+    printPawns(areas);
+}
+
+
+void movePlayer2(struct board* areas, int beat, int player)
+{
+    int n1 = throwDice();
+    int n2 = throwDice();
+    printDices(n1, n2);
+    putch('\n');
+
+    startComent();
+
+    int start = inputInt();
+
+    if (!correctPawnPlayer2(start, areas))
+    {
+        return;
+    }   
+
+    if (n1 == n2)
+    {
+        dubletPlayer2(start, n1, areas);
+        printPawns(areas);        
+    }
+    else
+    {
+        normalPlayer2(n1, n2, start, beat, player, areas);  
+        return;
+    }
+}                                                                      //////////////////////////////////////
+
+
+
+
+void saveGame(struct board* areas)                                //zapis gry do pliku
+{
+    FILE* file;
+    file = fopen(FILE_NAME, "w");
+
+    file = fopen(FILE_NAME, "w");
+    if (!file)
+    {
+        printf("Error opening the file.\n");
+        return;
+
+    }  
+    else
+    {
+        fwrite(areas->inside, sizeof(areas->inside[0][0]), PAWNS_AMOUNT * AREA_AMOUNT, file);
+        fclose(file);
+    }
+  
+
+} 
+
+
+
+void clearMistakeComment()                           //funkcje do czyszczenia komentarzy
+{
+    gotoxy(COMMENTS_X, COMMENTS_Y);
+    clreol();
+    gotoxy(MENU_X, MENU_Y);
+
+}
+
+void cleanComments()
+{
+    gotoxy(MENU_X, MENU_Y);
+    delline();
+    gotoxy(MENU_X, MENU_Y + 1);
+    delline();
+    gotoxy(MENU_X, MENU_Y + 2);
+    delline();
+    gotoxy(MENU_X, MENU_Y);
+}                                        //////////////////////////////////////////////////////
+
+
+
+
+bool menu(struct board* areas,int beat, int player)               //Menu 
+{
+    char menu = inputChar();
+    if (menu == 'M')
+    {
+        clearMistakeComment();
+        if (player == 1)
+        {
+            movePlayer1(areas, beat, player);
+            return false;
+        }
+        else
+        {
+            movePlayer2(areas, beat, player);
+            return false;
+        }
+    }
+    else if (menu == 'S')
+    {
+        clearMistakeComment();
+
+    }
+}                                   ///////////////////////////////////////////////////////////
+
+void Important(struct board*areas, char player1name[MAX_LETTERS], char player2name[MAX_LETTERS], char name1[MAX_LETTERS], char name2[MAX_LETTERS])           //wazne do zrobienia przed rozpoczeciem gry
+{
+    corrdiantesForAreasX(areas);
+    corrdinatesForAreasY(areas);
+    markPawnsOnAreas(areas);
+    startMenu(areas, player1name, player2name, name1, name2);
+}
+
 
 
 
@@ -1518,27 +1824,22 @@ int main()
 {
     srand((unsigned)time(0));
 
-
-    int areasX[AREA_AMOUNT];
-    int areasY[AREA_HIGHT+1][AREA_AMOUNT];
-    char areas[PAWNS_AMOUNT][AREA_AMOUNT];
-    int amountOfPawns[AREA_AMOUNT];
+    struct board areas;   
 
     char player1name[MAX_LETTERS];
     char player2name[MAX_LETTERS];
+
+    char name1[MAX_LETTERS];
+    char name2[MAX_LETTERS];
+
     bool player1 = true;
     bool player2 = true;   
     int player = 0;
-    char player1pawns = '[';
-    char player2pawns = '#';
+   
 
-    int beat = 0;
+    int beat = 0; 
 
-
-    corrdiantesForAreasX(areasX);
-    corrdinatesForAreasY(areasY);
-    markPawnsOnAreas(areas, amountOfPawns);
-    startMenu(areas, areasX, areasY, amountOfPawns, player1name, player2name);
+    Important(&areas, player1name, player2name, name1, name2);
 
 
     while (player1 && player2)
@@ -1546,37 +1847,19 @@ int main()
         if (player1)
         {
             player = 1;
-            cout << "Choose option from menu\n";            
-            menu(areas, areasX, areasY, beat, player, amountOfPawns);
-            gotoxy(1, 25);
-            clreol();
-            gotoxy(1, 26);
-            clreol();
-            gotoxy(1, 27);
-            delline();
-            gotoxy(1, 28);
-            delline();
-            gotoxy(1, 30);
-            clreol();
-            gotoxy(1, 25);
+            printf("Choose option from menu\n");            
+            player1=menu(&areas, beat, player);
+            cleanComments();
         }
         if (player2)
         {          
             player = 2;
-            cout << "Choose option from menu\n";
-            menu(areas, areasX, areasY, player2pawns, player, amountOfPawns);
-            gotoxy(1, 25);
-            clreol();
-            gotoxy(1, 26);
-            clreol();
-            gotoxy(1, 27);
-            delline();
-            gotoxy(1, 28);
-            delline();
-            gotoxy(1, 30);
-            clreol();
-            gotoxy(1, 25);
+            printf("Choose option from menu\n");
+            player2=menu(&areas, beat, player);
+            cleanComments();
         }
+        player1 = true;
+        player2 = true;
     } 
 
    
